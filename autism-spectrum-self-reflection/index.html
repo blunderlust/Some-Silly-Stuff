@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Autism Spectrum Self-Reflection Quiz</title>
+  <style>
+    :root {
+      --bg: #0f1220;
+      --panel: #171a2e;
+      --panel-2: #20243d;
+      --text: #f4f6ff;
+      --muted: #b8bed8;
+      --accent: #9be7ff;
+      --accent-2: #d6b4ff;
+      --warn: #ffdca8;
+      --border: #343956;
+      --good: #b8ffd2;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(155, 231, 255, 0.18), transparent 34rem),
+        radial-gradient(circle at top right, rgba(214, 180, 255, 0.16), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(960px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 72px;
+    }
+
+    .hero, .card, .result {
+      background: rgba(23, 26, 46, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+    }
+
+    .hero {
+      padding: clamp(24px, 5vw, 48px);
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 6vw, 4.6rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+    }
+
+    h2, h3 { line-height: 1.15; }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 72ch;
+    }
+
+    .notice {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-left: 4px solid var(--warn);
+      background: rgba(255, 220, 168, 0.09);
+      border-radius: 14px;
+      color: #fff1d3;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .mini {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .mini strong { color: var(--accent); }
+
+    .card {
+      padding: clamp(18px, 4vw, 28px);
+      margin-bottom: 18px;
+    }
+
+    .question-title {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .number {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #121526;
+      font-weight: 800;
+    }
+
+    fieldset {
+      border: 0;
+      margin: 18px 0 0;
+      padding: 0;
+    }
+
+    .choices {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    label.choice {
+      display: grid;
+      gap: 8px;
+      min-height: 86px;
+      padding: 12px 10px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.035);
+      cursor: pointer;
+      text-align: center;
+      color: var(--muted);
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+
+    label.choice:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+    }
+
+    label.choice:has(input:checked) {
+      color: var(--text);
+      background: rgba(155, 231, 255, 0.12);
+      border-color: var(--accent);
+    }
+
+    input[type="radio"] { accent-color: #9be7ff; }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary {
+      color: #101426;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .secondary {
+      color: var(--text);
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+    }
+
+    .result {
+      display: none;
+      padding: clamp(20px, 5vw, 36px);
+      margin-top: 18px;
+    }
+
+    .result.visible { display: block; }
+
+    .bars { display: grid; gap: 12px; margin: 20px 0; }
+
+    .bar-wrap {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      height: 18px;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 300ms ease;
+    }
+
+    .domain-row {
+      display: grid;
+      grid-template-columns: 170px 1fr 52px;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(184, 255, 210, 0.12);
+      color: var(--good);
+      border: 1px solid rgba(184, 255, 210, 0.28);
+      font-weight: 800;
+    }
+
+    .footer-note {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 720px) {
+      .choices { grid-template-columns: 1fr; }
+      label.choice { min-height: auto; text-align: left; grid-template-columns: auto 1fr; align-items: center; }
+      .domain-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <h1>Autism Spectrum Self-Reflection Quiz</h1>
+      <p class="subtitle">A practical, non-diagnostic check-in for autistic traits, support needs, sensory load, masking, and executive-function friction. Think of it as a mirror, not a medical verdict.</p>
+      <div class="notice"><strong>Important:</strong> Autism Level 1, 2, and 3 are clinical support-need categories from diagnostic practice. This page cannot diagnose autism, assign a real support level, replace a clinician, or resurrect the old Asperger's label as a diagnosis. It can help you organize what to discuss with a professional or understand yourself better.</div>
+      <div class="grid">
+        <div class="mini"><strong>Level 1-ish:</strong> lower outside support, but effort/masking may still be enormous.</div>
+        <div class="mini"><strong>Level 2-ish:</strong> noticeable daily support needs across communication, flexibility, or sensory regulation.</div>
+        <div class="mini"><strong>Level 3-ish:</strong> very substantial support needs, especially around communication, safety, daily living, or overwhelm.</div>
+      </div>
+    </section>
+
+    <form id="quiz" aria-describedby="quiz-help">
+      <p id="quiz-help" class="footer-note">For each statement, choose what has been most true across your life, not just during one bad week.</p>
+      <div id="questions"></div>
+      <div class="buttons">
+        <button class="primary" type="submit">Score my pattern</button>
+        <button class="secondary" type="button" id="resetBtn">Reset</button>
+      </div>
+    </form>
+
+    <section id="result" class="result" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const scale = [
+      { label: "Rarely / no", value: 0 },
+      { label: "Sometimes", value: 1 },
+      { label: "Often", value: 2 },
+      { label: "Very often", value: 3 },
+      { label: "Constantly / intense", value: 4 }
+    ];
+
+    const questions = [
+      { domain: "social", text: "Social rules feel manual, like I am running a script instead of using instinct." },
+      { domain: "social", text: "I miss hints, subtext, flirting, sarcasm, or indirect requests unless people are very clear." },
+      { domain: "social", text: "Group conversations are hard to track, especially when people talk over each other." },
+      { domain: "social", text: "I need recovery time after social interaction, even when I enjoyed it." },
+      { domain: "masking", text: "I consciously perform normal-looking facial expressions, tone, eye contact, or body language." },
+      { domain: "masking", text: "People underestimate how much effort I spend appearing fine." },
+      { domain: "sensory", text: "Sounds, lights, textures, smells, crowds, or chaotic environments can overwhelm me faster than other people." },
+      { domain: "sensory", text: "I use routines, headphones, dark rooms, specific clothing, or other controls to prevent overload." },
+      { domain: "repetition", text: "Changes in plan, interruptions, or uncertainty can feel disproportionately stressful." },
+      { domain: "repetition", text: "I have strong interests that I research deeply, revisit often, or use to regulate myself." },
+      { domain: "executive", text: "Starting, switching, sequencing, or stopping tasks can be hard even when I care about the task." },
+      { domain: "executive", text: "Daily-life maintenance like scheduling, cleaning, paperwork, cooking, hygiene, or errands takes unusual effort." },
+      { domain: "communication", text: "When overloaded, I become quiet, blunt, frozen, unusually literal, or unable to explain what I need." },
+      { domain: "communication", text: "I communicate better in writing, with preparation, or with a clear topic than in spontaneous conversation." },
+      { domain: "support", text: "I need another person, system, reminder, accommodation, or routine to keep life from derailing." },
+      { domain: "support", text: "Meltdowns, shutdowns, burnout, or sensory crashes have meaningfully affected work, school, relationships, or daily functioning." },
+      { domain: "support", text: "I avoid otherwise normal situations because the social or sensory cost is too high." },
+      { domain: "support", text: "Without accommodations, my ability to function drops sharply." }
+    ];
+
+    const domainNames = {
+      social: "Social decoding",
+      masking: "Masking cost",
+      sensory: "Sensory load",
+      repetition: "Routine / interests",
+      executive: "Executive friction",
+      communication: "Communication under load",
+      support: "Support needs"
+    };
+
+    const questionsRoot = document.querySelector("#questions");
+
+    questions.forEach((q, index) => {
+      const article = document.createElement("article");
+      article.className = "card";
+      article.innerHTML = `
+        <div class="question-title">
+          <span class="number">${index + 1}</span>
+          <div>
+            <h2>${q.text}</h2>
+            <p class="footer-note">Domain: ${domainNames[q.domain]}</p>
+          </div>
+        </div>
+        <fieldset>
+          <legend class="visually-hidden">Question ${index + 1}</legend>
+          <div class="choices">
+            ${scale.map(item => `
+              <label class="choice">
+                <input type="radio" name="q${index}" value="${item.value}" required />
+                <span>${item.label}</span>
+              </label>
+            `).join("")}
+          </div>
+        </fieldset>
+      `;
+      questionsRoot.appendChild(article);
+    });
+
+    function classify(total, max) {
+      const pct = total / max;
+      if (pct < 0.25) {
+        return {
+          title: "Low autistic-trait signal on this quiz",
+          badge: "Low signal",
+          summary: "Your answers do not strongly cluster around the autistic-trait/support-needs pattern measured here. That does not rule anything in or out. It just means this specific mirror did not light up much."
+        };
+      }
+      if (pct < 0.48) {
+        return {
+          title: "Autistic-trait pattern, lower apparent support needs",
+          badge: "Level 1-ish / Asperger-ish pattern",
+          summary: "Your pattern resembles lower outside support needs with meaningful internal effort. This is the zone many people historically associated with Asperger's, though that label is no longer a separate DSM diagnosis. Masking and burnout can still be brutal here."
+        };
+      }
+      if (pct < 0.72) {
+        return {
+          title: "Moderate autistic-trait pattern with notable support needs",
+          badge: "Level 2-ish pattern",
+          summary: "Your answers suggest daily support needs are probably not optional luxuries. Social decoding, sensory regulation, transitions, communication under load, or executive-function scaffolding may be central to staying functional."
+        };
+      }
+      return {
+        title: "High autistic-trait pattern with substantial support needs",
+        badge: "Level 3-ish pattern",
+        summary: "Your answers suggest very substantial support needs or very high hidden cost. If this reflects your real life, it is worth taking seriously and discussing with a qualified clinician or support professional."
+      };
+    }
+
+    function getDomainScores(formData) {
+      const scores = {};
+      const counts = {};
+      questions.forEach((q, index) => {
+        const value = Number(formData.get(`q${index}`));
+        scores[q.domain] = (scores[q.domain] || 0) + value;
+        counts[q.domain] = (counts[q.domain] || 0) + 4;
+      });
+      return Object.keys(scores).map(domain => ({
+        domain,
+        label: domainNames[domain],
+        score: scores[domain],
+        max: counts[domain],
+        pct: scores[domain] / counts[domain]
+      })).sort((a, b) => b.pct - a.pct);
+    }
+
+    document.querySelector("#quiz").addEventListener("submit", event => {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      const total = questions.reduce((sum, _, index) => sum + Number(formData.get(`q${index}`)), 0);
+      const max = questions.length * 4;
+      const pct = Math.round((total / max) * 100);
+      const classification = classify(total, max);
+      const domains = getDomainScores(formData);
+      const topDomains = domains.slice(0, 3).map(d => d.label.toLowerCase()).join(", ");
+
+      const result = document.querySelector("#result");
+      result.classList.add("visible");
+      result.innerHTML = `
+        <span class="badge">${classification.badge}</span>
+        <h2>${classification.title}</h2>
+        <p>${classification.summary}</p>
+        <p><strong>Total:</strong> ${total} / ${max} (${pct}%). Your strongest domains were: ${topDomains}.</p>
+        <div class="bars">
+          ${domains.map(d => `
+            <div class="domain-row">
+              <strong>${d.label}</strong>
+              <div class="bar-wrap"><div class="bar" style="width:${Math.round(d.pct * 100)}%"></div></div>
+              <span>${Math.round(d.pct * 100)}%</span>
+            </div>
+          `).join("")}
+        </div>
+        <h3>How to use this</h3>
+        <p>Save or screenshot these results if they help you explain your experience. The useful question is not “what type am I?” so much as “where do I need less friction, fewer surprise demands, better sensory control, clearer communication, and more humane support?”</p>
+        <div class="notice"><strong>Reality check:</strong> A clinical autism evaluation looks at developmental history, current functioning, restricted/repetitive patterns, sensory differences, communication, differential diagnoses, and support needs. This page is only a self-reflection tool.</div>
+      `;
+      result.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    document.querySelector("#resetBtn").addEventListener("click", () => {
+      document.querySelector("#quiz").reset();
+      document.querySelector("#result").classList.remove("visible");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  </script>
+</body>
+</html>
